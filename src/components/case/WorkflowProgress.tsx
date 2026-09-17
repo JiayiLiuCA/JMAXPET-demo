@@ -54,9 +54,9 @@ export function WorkflowProgress({ c, user }: { c: Case; user: User }) {
             const isCur = st.key === c.current_step_key;
             const target = sectionLabel(st.key);
             return (
-              <li key={st.key} className="relative flex w-[92px] flex-col items-center">
+              <li key={st.key} className="relative flex w-[5.75rem] flex-col items-center">
                 {i < c.timeline.length - 1 && (
-                  <span className="absolute top-[11px] left-1/2 h-0.5 w-full" style={{ background: st.status === '完成' ? STEP_STATUS_COLOR['完成'] : '#e2e2e2' }} />
+                  <span className="absolute top-[0.7rem] left-1/2 h-0.5 w-full" style={{ background: st.status === '完成' ? STEP_STATUS_COLOR['完成'] : '#e2e2e2' }} />
                 )}
                 <Tooltip>
                   <TooltipTrigger
@@ -71,12 +71,12 @@ export function WorkflowProgress({ c, user }: { c: Case; user: User }) {
                       className={cn('flex size-6 items-center justify-center rounded-full ring-2 ring-white transition-transform group-hover/step:scale-110', isCur && 'ring-4 ring-accent-2')}
                       style={{ background: color, color: st.status === '未开始' ? '#8f8f8f' : '#fff' }}
                     >
-                      {st.status === '完成' ? <Check className="size-3.5" /> : st.status === '延误' ? <AlertTriangle className="size-3" /> : st.status === '进行中' ? <CircleDot className="size-3.5" /> : <span className="text-[10px]">{i + 1}</span>}
+                      {st.status === '完成' ? <Check className="size-3.5" /> : st.status === '延误' ? <AlertTriangle className="size-3" /> : st.status === '进行中' ? <CircleDot className="size-3.5" /> : <span className="text-[0.65rem]">{i + 1}</span>}
                     </span>
-                    <span className={cn('mt-1.5 px-1 text-center text-[11px] leading-tight group-hover/step:underline', isCur ? 'font-semibold text-foreground' : 'text-[#595959]')}>{st.label}</span>
-                    <span className={cn('mt-0.5 text-[10px]', st.status === '延误' ? 'text-destructive' : 'text-muted-foreground')}>{fmtDate(st.planned_date)}</span>
+                    <span className={cn('mt-1.5 px-1 text-center text-[0.7rem] leading-tight group-hover/step:underline', isCur ? 'font-semibold text-foreground' : 'text-[#595959]')}>{st.label}</span>
+                    <span className={cn('mt-0.5 text-[0.65rem]', st.status === '延误' ? 'text-destructive' : 'text-muted-foreground')}>{fmtDate(st.planned_date)}</span>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="max-w-[260px]">
+                  <TooltipContent side="bottom" className="max-w-[16rem]">
                     <div className="space-y-1 text-xs">
                       <div className="flex items-center gap-2 font-medium">{st.label} <StatusBadge value={st.status} kind="step" /></div>
                       <div className="text-white/75">计划 {fmtDate(st.planned_date)}（{relativeLabel(st.planned_date, today)}） · {st.offset_rule}</div>

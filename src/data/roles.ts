@@ -4,13 +4,12 @@ export const SECTION_META: { key: SectionKey; label: string; index: string; owne
   { key: 'pet', label: '宠物信息 + 寄养', index: '①', owner: 'ops_docs' },
   { key: 'owner', label: '主人信息', index: '②', owner: 'ops_docs' },
   { key: 'route', label: '路线', index: '③', owner: 'admin' },
-  { key: 'handover', label: '销售交接', index: '④', owner: 'admin' },
-  { key: 'docs', label: '疫苗 / 文件 Timeline', index: '⑤', owner: 'ops_docs' },
-  { key: 'flight', label: '航班与订舱', index: '⑥', owner: 'booking' },
-  { key: 'payment', label: '收款情况', index: '⑦', owner: 'admin' },
-  { key: 'log', label: '内部备注 / 操作日志', index: '⑧', owner: 'admin' },
-  { key: 'driver', label: '司机与提货', index: '⑨', owner: 'ops_logistics' },
-  { key: 'foster', label: '寄养日常', index: '⑩', owner: 'ops_logistics' },
+  { key: 'docs', label: '疫苗 / 文件 Timeline', index: '④', owner: 'ops_docs' },
+  { key: 'flight', label: '航班与订舱', index: '⑤', owner: 'booking' },
+  { key: 'driver', label: '司机与提货', index: '⑥', owner: 'ops_logistics' },
+  { key: 'foster', label: '寄养日常', index: '⑦', owner: 'ops_logistics' },
+  { key: 'log', label: '内部备注 / 销售交接 / 操作日志', index: '⑧', owner: 'admin' },
+  { key: 'payment', label: '收款情况', index: '⑨', owner: 'admin' },
 ];
 
 export const PAGE_META: { key: PageKey; label: string; path: string }[] = [
@@ -56,9 +55,9 @@ const E = { view: true, edit: true };
 const N = { view: false, edit: false };
 
 export const defaultPermissions: PermissionMatrix = {
-  admin: { pet: E, owner: E, route: E, handover: E, docs: E, flight: E, payment: E, log: E, driver: E, foster: E },
-  ops_docs: { pet: V, owner: E, route: V, handover: V, docs: E, flight: N, payment: N, log: V, driver: N, foster: N },
-  ops_logistics: { pet: E, owner: N, route: V, handover: V, docs: N, flight: N, payment: V, log: E, driver: E, foster: E },
-  booking: { pet: N, owner: N, route: V, handover: N, docs: N, flight: E, payment: N, log: V, driver: N, foster: N },
-  driver: { pet: N, owner: N, route: N, handover: N, docs: N, flight: N, payment: N, log: N, driver: V, foster: N },
+  admin: { pet: E, owner: E, route: E, docs: E, flight: E, driver: E, foster: E, log: E, payment: E },
+  ops_docs: { pet: V, owner: E, route: V, docs: E, flight: N, driver: N, foster: N, log: V, payment: N },
+  ops_logistics: { pet: E, owner: N, route: V, docs: N, flight: N, driver: E, foster: E, log: E, payment: V },
+  booking: { pet: N, owner: N, route: V, docs: N, flight: E, driver: N, foster: N, log: V, payment: N },
+  driver: { pet: N, owner: N, route: N, docs: N, flight: N, driver: V, foster: N, log: N, payment: N },
 };

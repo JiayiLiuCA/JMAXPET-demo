@@ -61,7 +61,7 @@ export function NewCaseDialog({ user }: { user: User }) {
           <DialogTitle>新建 Case</DialogTitle>
           <DialogDescription>选择线路模板后，系统按出发日倒推每一步计划日期，生成这只宠物的 Timeline。</DialogDescription>
         </DialogHeader>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_260px]">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_16rem]">
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1.5"><Label>宠物名</Label><Input value={pet} onChange={(e) => setPet(e.target.value)} placeholder="Mochi / 豆豆" /></div>
             <div className="grid gap-1.5"><Label>品种</Label><SimpleSelect value={breed} onChange={setBreed} options={BREEDS} className="w-full" size="default" /></div>

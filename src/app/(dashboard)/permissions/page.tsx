@@ -54,7 +54,7 @@ export default function PermissionsPage() {
                 <tr key={rk} className="border-b last:border-0">
                   <td className="sticky left-0 bg-white px-3 py-2 whitespace-nowrap">
                     <div className="font-medium">{roles[rk].label}</div>
-                    <div className="text-[11px] text-muted-foreground">{users.filter((u) => u.role === rk).map((u) => u.name).join('、')}</div>
+                    <div className="text-[0.7rem] text-muted-foreground">{users.filter((u) => u.role === rk).map((u) => u.name).join('、')}</div>
                   </td>
                   {SECTION_META.map((s) => {
                     const p = permissions[rk][s.key];

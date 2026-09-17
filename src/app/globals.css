@@ -115,6 +115,10 @@
   --bucket-risk: #e03939;
 }
 
+/* ---- 自动缩放：根字号随视口宽度流动，Tailwind 的字号 / 间距 / 圆角 / 图标全是 rem，整体等比缩放。
+   1280px → 15px，1440 → 15.4，1707（2K@150%）→ 17.1，1920 → 18.5，2560（2K@100%）→ 22.6，上限 23。 */
+html { font-size: clamp(15px, 0.65vw + 6px, 23px); }
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

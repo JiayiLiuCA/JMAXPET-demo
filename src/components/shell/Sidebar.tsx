@@ -18,7 +18,7 @@ export function Sidebar() {
     <aside className="hidden w-56 shrink-0 flex-col border-r border-border bg-sidebar md:flex">
       <div className="flex h-16 items-center px-4">
         <Link href={PAGE_META.find((p) => p.key === roles[user.role].homePage)!.path}>
-          <Image src="/logo.png" alt="JMAXPET" width={150} height={75} priority className="h-auto w-[140px]" />
+          <Image src="/logo.png" alt="JMAXPET" width={150} height={75} priority className="h-auto w-[8.75rem]" />
         </Link>
       </div>
       <nav className="flex flex-1 flex-col gap-0.5 px-2 py-2">
@@ -40,7 +40,7 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <div className="px-4 py-3 text-[11px] leading-relaxed text-muted-foreground">
+      <div className="px-4 py-3 text-[0.7rem] leading-relaxed text-muted-foreground">
         Mock Demo · seed 日期 {SEED_TODAY}
         <br />
         数据仅在内存，刷新即重置

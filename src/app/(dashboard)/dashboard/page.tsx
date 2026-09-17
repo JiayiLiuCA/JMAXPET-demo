@@ -23,7 +23,7 @@ export default function DashboardPage() {
   const isAdmin = user.role === 'admin';
 
   return (
-    <div className="mx-auto max-w-6xl space-y-4">
+    <div className="mx-auto max-w-7xl space-y-4">
       {/* 筛选 + 动作 */}
       <div className="flex flex-wrap items-center gap-3">
         <Filters value={filter} onChange={setFilter} hideAssignee={!isAdmin} />

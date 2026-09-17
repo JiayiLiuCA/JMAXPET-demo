@@ -48,7 +48,7 @@ export function FlightChangeDialog({ c, user }: { c: Case; user: User }) {
               className={cn('rounded-lg border p-2.5 text-left transition-colors hover:bg-muted', type === t ? 'border-primary bg-accent-2/40' : 'border-border')}
             >
               <div className="text-sm font-medium">{t}</div>
-              <div className="mt-0.5 text-[11px] leading-snug text-muted-foreground">{DESC[t]}</div>
+              <div className="mt-0.5 text-[0.7rem] leading-snug text-muted-foreground">{DESC[t]}</div>
             </button>
           ))}
         </div>

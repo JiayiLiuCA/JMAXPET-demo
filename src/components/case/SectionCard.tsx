@@ -12,7 +12,7 @@ export function SectionCard({ section, canEdit, children, actions, className }: 
       <header className="mb-3 flex items-center gap-2">
         <span className="text-sm text-muted-foreground">{meta.index}</span>
         <h3 className="font-heading text-sm font-semibold text-foreground">{meta.label}</h3>
-        <span className={cn('ml-1 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px]', canEdit ? 'bg-success/25 text-[#2f5a3c]' : 'bg-muted text-muted-foreground')}>
+        <span className={cn('ml-1 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[0.65rem]', canEdit ? 'bg-success/25 text-[#2f5a3c]' : 'bg-muted text-muted-foreground')}>
           {canEdit ? <Pencil className="size-2.5" /> : <Eye className="size-2.5" />}
           {canEdit ? '可编辑' : '只读'}
         </span>

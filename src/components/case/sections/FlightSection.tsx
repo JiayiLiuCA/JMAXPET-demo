@@ -30,7 +30,7 @@ export function FlightSection({ c, canEdit, user }: SectionProps) {
         {canEdit && (
           <div className="flex items-end gap-1.5">
             <div>
-              <div className="text-[11px] tracking-wide text-muted-foreground">从航线速查填入</div>
+              <div className="text-[0.7rem] tracking-wide text-muted-foreground">从航线速查填入</div>
               <SimpleSelect value={routeId} onChange={setRouteId} options={candidates.map((r) => ({ value: r.id, label: `${r.airline_code} ${r.flight_no} → ${r.dest}${r.type === '中转' ? ` 经 ${r.via}` : ''}` }))} placeholder="选航线…" className="mt-0.5 w-56" />
             </div>
             <Button size="sm" variant="outline" disabled={!routeId} onClick={() => { fillRoute(c.id, routeId, user.id); setRouteId(''); }}>填入</Button>

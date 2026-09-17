@@ -37,11 +37,11 @@ export function DocsSection({ c, canEdit, user }: SectionProps) {
       </div>
 
       <div>
-        <div className="mb-2 text-[11px] tracking-wide text-muted-foreground">文件 Timeline（前期文件负责步骤）</div>
+        <div className="mb-2 text-[0.7rem] tracking-wide text-muted-foreground">文件 Timeline（前期文件负责步骤）</div>
         <ol className="relative ml-2 border-l border-border pl-4">
           {steps.map((s) => (
             <li key={s.key} className="relative mb-3 last:mb-0">
-              <span className="absolute -left-[21px] top-1 size-2.5 rounded-full ring-2 ring-white" style={{ background: STEP_STATUS_COLOR[s.status] }} />
+              <span className="absolute -left-[1.3rem] top-1 size-2.5 rounded-full ring-2 ring-white" style={{ background: STEP_STATUS_COLOR[s.status] }} />
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span className={cn('text-sm', s.key === c.current_step_key && 'font-semibold')}>{s.label}</span>
                 <StatusBadge value={s.status} kind="step" />

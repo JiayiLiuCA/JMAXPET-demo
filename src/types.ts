@@ -20,7 +20,7 @@ export type FlightChangeType = (typeof FLIGHT_CHANGE_TYPES)[number];
 
 // ---------- 角色 / 权限 ----------
 export type RoleKey = 'admin' | 'ops_docs' | 'ops_logistics' | 'booking' | 'driver';
-export type SectionKey = 'pet' | 'owner' | 'route' | 'handover' | 'docs' | 'flight' | 'payment' | 'log' | 'driver' | 'foster';
+export type SectionKey = 'pet' | 'owner' | 'route' | 'docs' | 'flight' | 'driver' | 'foster' | 'log' | 'payment';
 export type PageKey = 'dashboard' | 'todo' | 'cases' | 'calendar' | 'routes' | 'permissions' | 'archive';
 export type CaseScope = 'all' | 'assigned' | 'booking' | 'driver';
 

@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 export function Field({ label, children, className, mono }: { label: string; children?: React.ReactNode; className?: string; mono?: boolean }) {
   return (
     <div className={cn('min-w-0', className)}>
-      <div className="text-[11px] tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-[0.7rem] tracking-wide text-muted-foreground">{label}</div>
       <div className={cn('mt-0.5 min-h-5 text-sm text-foreground break-words', mono && 'font-mono')}>{children ?? '—'}</div>
     </div>
   );
@@ -19,7 +19,7 @@ export function TextField({ label, value, onChange, editable, type = 'text', pla
   if (!editable) return <Field label={label} className={className}>{value || '—'}</Field>;
   return (
     <div className={cn('min-w-0', className)}>
-      <div className="text-[11px] tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-[0.7rem] tracking-wide text-muted-foreground">{label}</div>
       <Input type={type} value={value} placeholder={placeholder} onChange={(e) => onChange?.(e.target.value)} className="mt-0.5 h-7 bg-white text-sm" />
     </div>
   );
@@ -29,7 +29,7 @@ export function TextAreaField({ label, value, onChange, editable, rows = 3, clas
   if (!editable) return <Field label={label} className={className}><span className="whitespace-pre-wrap">{value || '—'}</span></Field>;
   return (
     <div className={cn('min-w-0', className)}>
-      <div className="text-[11px] tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-[0.7rem] tracking-wide text-muted-foreground">{label}</div>
       <Textarea value={value} rows={rows} onChange={(e) => onChange?.(e.target.value)} className="mt-0.5 bg-white text-sm" />
     </div>
   );
@@ -61,7 +61,7 @@ export function SelectField({ label, value, onChange, options, editable, classNa
   if (!editable) return <Field label={label} className={className}>{kindBadge ?? (value || '—')}</Field>;
   return (
     <div className={cn('min-w-0', className)}>
-      <div className="text-[11px] tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-[0.7rem] tracking-wide text-muted-foreground">{label}</div>
       <SimpleSelect value={value} onChange={(v) => onChange?.(v)} options={options} className="mt-0.5 w-full" allowEmpty={options.includes('') ? '—' : undefined} />
     </div>
   );

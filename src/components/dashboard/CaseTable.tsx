@@ -45,7 +45,7 @@ export function CaseTable({ cases, compact }: { cases: Case[]; compact?: boolean
               <TableCell className="text-xs">{c.origin} → {c.dest_region}{c.flights[0] ? <span className="text-muted-foreground"> · {c.flights[0].flight_no}</span> : null}</TableCell>
               <TableCell>
                 <div className="text-sm">{fmtDate(c.departure_date)}</div>
-                <div className="text-[11px] text-muted-foreground">{relativeLabel(c.departure_date, today)}</div>
+                <div className="text-[0.7rem] text-muted-foreground">{relativeLabel(c.departure_date, today)}</div>
               </TableCell>
               <TableCell><StatusBadge value={c.stage} kind="stage" /></TableCell>
               <TableCell><Tag tone="info">{c.next_step}</Tag></TableCell>
@@ -53,7 +53,7 @@ export function CaseTable({ cases, compact }: { cases: Case[]; compact?: boolean
                 {c.deadline ? (
                   <span className={cn('text-sm', dl! < 0 ? 'font-medium text-destructive' : dl === 0 ? 'font-medium text-[#6b4f12]' : '')}>
                     {fmtDate(c.deadline)}
-                    <span className="ml-1 text-[11px] font-normal text-muted-foreground">{dl! < 0 ? `逾期 ${-dl!} 天` : dl === 0 ? '今天' : dl === 1 ? '明天' : `${dl} 天后`}</span>
+                    <span className="ml-1 text-[0.7rem] font-normal text-muted-foreground">{dl! < 0 ? `逾期 ${-dl!} 天` : dl === 0 ? '今天' : dl === 1 ? '明天' : `${dl} 天后`}</span>
                   </span>
                 ) : <span className="text-muted-foreground">—</span>}
               </TableCell>

@@ -60,8 +60,6 @@ export function sectionProgress(c: Case, tasks: Task[], section: SectionKey): Pr
       return { label: c.passport_no ? '已完成' : '进行中', detail: '护照 / 联系方式已录入' };
     case 'route':
       return { label: '已完成', detail: c.route };
-    case 'handover':
-      return { label: '已完成', detail: '销售交接已完成' };
     case 'docs': {
       const docKeys = ['chip', 'rabies', 'wait21', 'favn', 'serum', 'permit', 'cdc_form', 'hospital', 'cfia', 'usda', 'health_cert', 'cn_quarantine', 'rnatt', 'rnatt_wait', 'airline_policy'];
       const steps = c.timeline.filter((s) => docKeys.includes(s.key));
@@ -78,7 +76,7 @@ export function sectionProgress(c: Case, tasks: Task[], section: SectionKey): Pr
       return { label: ok ? '已完成' : c.payment_status === '必填费用未收' ? '未开始' : '进行中', detail: `${c.payment_status} · ${c.final_payment_status}` };
     }
     case 'log':
-      return { label: '进行中', detail: '操作日志' };
+      return { label: '进行中', detail: c.sales_handover ? '销售交接已录入 · 操作日志' : '操作日志' };
     case 'driver': {
       const ts = tasks.filter((t) => t.case_id === c.id && ['接宠', '送机', '送医院', '送 CFIA', '采血'].includes(t.type));
       const done = ts.filter((t) => t.status === '已完成').length;

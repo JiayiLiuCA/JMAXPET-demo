@@ -50,7 +50,7 @@ export function UserSwitcher({ compact }: { compact?: boolean }) {
               <span className="font-medium">{u.name}</span>
               <span className="ml-1.5 text-xs text-muted-foreground">{u.title}</span>
             </span>
-            {roles[u.role].mobile && <span className="rounded-full bg-accent-2 px-1.5 text-[10px]">手机</span>}
+            {roles[u.role].mobile && <span className="rounded-full bg-accent-2 px-1.5 text-[0.65rem]">手机</span>}
           </DropdownMenuItem>
         ))}
         </DropdownMenuGroup>

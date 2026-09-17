@@ -80,7 +80,7 @@ export default function CalendarPage() {
         <div className="grid grid-cols-7 border-b bg-muted/50 text-center text-xs text-muted-foreground">
           {['一', '二', '三', '四', '五', '六', '日'].map((w) => <div key={w} className="py-1.5">周{w}</div>)}
         </div>
-        <div className={cn('grid grid-cols-7', view === 'month' ? 'auto-rows-[minmax(112px,auto)]' : 'auto-rows-[minmax(420px,auto)]')}>
+        <div className={cn('grid grid-cols-7', view === 'month' ? 'auto-rows-[minmax(7rem,auto)]' : 'auto-rows-[minmax(26rem,auto)]')}>
           {range.map((day) => {
             const iso = toISO(day);
             const evs = byDate(iso);
@@ -91,22 +91,22 @@ export default function CalendarPage() {
               <div key={iso} className={cn('border-r border-b p-1.5 last:border-r-0', outside && 'bg-muted/30', isToday && 'bg-warning/10')}>
                 <div className={cn('mb-1 flex items-center justify-between text-xs', outside ? 'text-muted-foreground' : 'text-foreground')}>
                   <span className={cn(isToday && 'rounded-full bg-primary px-1.5 text-white')}>{format(day, 'd')}</span>
-                  {evs.length > 0 && <span className="text-[10px] text-muted-foreground">{evs.length}</span>}
+                  {evs.length > 0 && <span className="text-[0.65rem] text-muted-foreground">{evs.length}</span>}
                 </div>
                 <div className="space-y-0.5">
                   {evs.slice(0, max).map((e) => (
-                    <button key={e.id} onClick={() => openCase(e.case_id)} className="block w-full truncate rounded px-1 py-0.5 text-left text-[11px] leading-tight text-white hover:opacity-90" style={{ background: e.color }} title={`${e.label} · ${e.sub}`}>
-                      {e.label}{view === 'week' && <span className="block text-[10px] opacity-80">{e.sub}</span>}
+                    <button key={e.id} onClick={() => openCase(e.case_id)} className="block w-full truncate rounded px-1 py-0.5 text-left text-[0.7rem] leading-tight text-white hover:opacity-90" style={{ background: e.color }} title={`${e.label} · ${e.sub}`}>
+                      {e.label}{view === 'week' && <span className="block text-[0.65rem] opacity-80">{e.sub}</span>}
                     </button>
                   ))}
-                  {evs.length > max && <div className="text-[10px] text-muted-foreground">+{evs.length - max} 更多</div>}
+                  {evs.length > max && <div className="text-[0.65rem] text-muted-foreground">+{evs.length - max} 更多</div>}
                 </div>
               </div>
             );
           })}
         </div>
       </div>
-      <div className="flex flex-wrap gap-3 text-[11px] text-muted-foreground">
+      <div className="flex flex-wrap gap-3 text-[0.7rem] text-muted-foreground">
         {Object.entries(TASK_COLOR).map(([k, v]) => <span key={k} className="inline-flex items-center gap-1"><span className="size-2.5 rounded-sm" style={{ background: v }} />{k}</span>)}
         <span className="inline-flex items-center gap-1"><span className="size-2.5 rounded-sm bg-primary" />出发</span>
         <span className="inline-flex items-center gap-1"><span className="size-2.5 rounded-sm bg-latte" />寄养起止</span>

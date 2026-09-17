@@ -144,7 +144,7 @@ function OpsTodo({ user }: { user: User }) {
                   <TableCell>
                     {c && <button onClick={() => openCase(c.id)} className="text-left hover:underline">{petEmojiOf(c)} {c.pet_name} <span className="font-mono text-xs text-muted-foreground">{c.file_no}</span></button>}
                   </TableCell>
-                  <TableCell className="max-w-[280px] truncate text-xs text-[#595959]" title={`${t.pickup_addr} → ${t.dest_addr}`}>{t.pickup_addr ? `${t.pickup_addr} → ${t.dest_addr}` : t.notes || '—'}</TableCell>
+                  <TableCell className="max-w-[17.5rem] truncate text-xs text-[#595959]" title={`${t.pickup_addr} → ${t.dest_addr}`}>{t.pickup_addr ? `${t.pickup_addr} → ${t.dest_addr}` : t.notes || '—'}</TableCell>
                   <TableCell><span className="inline-flex items-center gap-1.5"><UserAvatar user={userById(t.assignee_id)} size="sm" />{userById(t.assignee_id)?.name}</span></TableCell>
                   <TableCell><StatusBadge value={t.status} kind="task" /></TableCell>
                   <TableCell className="text-right">

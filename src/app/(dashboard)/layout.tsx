@@ -36,7 +36,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (roles[user.role].mobile) {
     return (
       <div className="min-h-screen bg-[#ece7e8]/60">
-        <div className="mx-auto min-h-screen w-full max-w-[430px] bg-background shadow-xl ring-1 ring-foreground/10">
+        <div className="mx-auto min-h-screen w-full max-w-[27rem] bg-background shadow-xl ring-1 ring-foreground/10">
           <MobileTopbar />
           <main className="p-3">{children}</main>
         </div>

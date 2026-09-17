@@ -37,10 +37,10 @@ export function NotificationBell({ compact }: { compact?: boolean }) {
       <PopoverTrigger render={<Button variant="outline" size="icon" className="relative size-9 rounded-full" />}>
         {unreadMine ? <BellRing className="size-4" /> : <Bell className="size-4" />}
         {unreadMine > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-white ring-2 ring-white">{unreadMine}</span>
+          <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[0.65rem] font-semibold text-white ring-2 ring-white">{unreadMine}</span>
         )}
       </PopoverTrigger>
-      <PopoverContent align="end" className={cn('w-[380px] p-0', compact && 'w-[340px]')}>
+      <PopoverContent align="end" className={cn('w-[24rem] p-0', compact && 'w-[21rem]')}>
         <div className="flex items-center justify-between gap-2 border-b px-3 py-2">
           <div className="text-sm font-medium">通知中心</div>
           <div className="flex items-center gap-1.5">
@@ -50,7 +50,7 @@ export function NotificationBell({ compact }: { compact?: boolean }) {
             <Button size="xs" variant="ghost" onClick={() => markAllRead(target!)}><CheckCheck /> 全部已读</Button>
           </div>
         </div>
-        <ScrollArea className="max-h-[420px]">
+        <ScrollArea className="max-h-[26rem]">
           <div className="flex flex-col">
             {list.length === 0 && <div className="px-4 py-10 text-center text-sm text-muted-foreground">暂无通知</div>}
             {list.map((n) => {
@@ -70,7 +70,7 @@ export function NotificationBell({ compact }: { compact?: boolean }) {
                       {!n.read && <span className="size-1.5 shrink-0 rounded-full bg-destructive" />}
                     </span>
                     <span className="mt-0.5 block text-xs leading-relaxed text-[#595959]">{n.body}</span>
-                    <span className="mt-0.5 block text-[11px] text-muted-foreground">{fmtDateTime(n.created_at)}</span>
+                    <span className="mt-0.5 block text-[0.7rem] text-muted-foreground">{fmtDateTime(n.created_at)}</span>
                   </span>
                 </button>
               );

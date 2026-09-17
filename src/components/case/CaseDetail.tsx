@@ -22,7 +22,6 @@ import { LockedSection, SectionCard } from '@/components/case/SectionCard';
 import { PetSection } from '@/components/case/sections/PetSection';
 import { OwnerSection } from '@/components/case/sections/OwnerSection';
 import { RouteSection } from '@/components/case/sections/RouteSection';
-import { HandoverSection } from '@/components/case/sections/HandoverSection';
 import { DocsSection } from '@/components/case/sections/DocsSection';
 import { FlightSection } from '@/components/case/sections/FlightSection';
 import { PaymentSection } from '@/components/case/sections/PaymentSection';
@@ -32,7 +31,7 @@ import { FosterSection } from '@/components/case/sections/FosterSection';
 import { cn } from '@/lib/utils';
 
 const SECTION_COMPONENT: Record<SectionKey, React.ComponentType<{ c: Case; canEdit: boolean; user: User }>> = {
-  pet: PetSection, owner: OwnerSection, route: RouteSection, handover: HandoverSection, docs: DocsSection, flight: FlightSection, payment: PaymentSection, log: LogSection, driver: DriverSection, foster: FosterSection,
+  pet: PetSection, owner: OwnerSection, route: RouteSection, docs: DocsSection, flight: FlightSection, driver: DriverSection, foster: FosterSection, log: LogSection, payment: PaymentSection,
 };
 
 /** Case 详情子页面 */
@@ -116,17 +115,17 @@ function Body({ c, user }: { c: Case; user: User }) {
         </div>
         {headerEditable && !c.archived && (
           <div className="mt-4 flex flex-wrap items-center gap-2 border-t pt-3">
-            <span className="text-[11px] text-muted-foreground">快速编辑</span>
+            <span className="text-[0.7rem] text-muted-foreground">快速编辑</span>
             <SimpleSelect value={c.priority} onChange={(v) => set({ priority: v as Case['priority'] })} options={PRIORITIES} className="h-7 text-xs" />
             <SimpleSelect value={c.stage} onChange={(v) => set({ stage: v as Case['stage'] })} options={STAGES} className="h-7 text-xs" />
             <SimpleSelect value={c.next_step} onChange={(v) => set({ next_step: v as Case['next_step'] })} options={NEXT_STEPS} className="h-7 text-xs" />
             <SimpleSelect value={c.waiting} onChange={(v) => set({ waiting: v as Case['waiting'] })} options={WAITINGS} allowEmpty="不在等" className="h-7 text-xs" />
             <div className="flex items-center gap-1">
-              <span className="text-[11px] text-muted-foreground">风险</span>
+              <span className="text-[0.7rem] text-muted-foreground">风险</span>
               {RISK_TAGS.map((r) => {
                 const on = c.risk_tags.includes(r);
                 return (
-                  <button key={r} onClick={() => set({ risk_tags: on ? c.risk_tags.filter((x) => x !== r) : [...c.risk_tags, r] })} className={cn('rounded-full border px-2 py-0.5 text-[11px] transition-colors', on ? 'border-destructive/40 bg-destructive/10 text-destructive' : 'border-border text-muted-foreground hover:bg-muted')}>{r}</button>
+                  <button key={r} onClick={() => set({ risk_tags: on ? c.risk_tags.filter((x) => x !== r) : [...c.risk_tags, r] })} className={cn('rounded-full border px-2 py-0.5 text-[0.7rem] transition-colors', on ? 'border-destructive/40 bg-destructive/10 text-destructive' : 'border-border text-muted-foreground hover:bg-muted')}>{r}</button>
                 );
               })}
             </div>
