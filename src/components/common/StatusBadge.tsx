@@ -1,0 +1,27 @@
+import { cn } from '@/lib/utils';
+import { AIRLINE_STATUS_COLOR, PRIORITY_COLOR, STEP_STATUS_COLOR, TASK_STATUS_COLOR } from '@/lib/buckets';
+
+const STAGE_COLOR: Record<string, string> = { 新建: '#8f8f8f', 办理签证: '#c9c3d6', 等待文件: '#d2ac72', 落实置: '#cbb2a6', 核机中: '#5b7fa6', 出发: '#2b5672', 到达: '#7fa88b', 完成: '#7fa88b', 已取消: '#e03939' };
+const MAPS = { priority: PRIORITY_COLOR, airline: AIRLINE_STATUS_COLOR, step: STEP_STATUS_COLOR, task: TASK_STATUS_COLOR, stage: STAGE_COLOR } as const;
+
+export function StatusBadge({ value, kind, className, color }: { value: string; kind?: keyof typeof MAPS; className?: string; color?: string }) {
+  const c = color ?? (kind ? MAPS[kind][value] : undefined) ?? '#8f8f8f';
+  return (
+    <span className={cn('inline-flex h-5 items-center gap-1 rounded-full px-2 text-xs font-medium whitespace-nowrap', className)} style={{ background: `${c}22`, color: '#2b5672' }}>
+      <span className="size-1.5 rounded-full" style={{ background: c }} />
+      {value || '—'}
+    </span>
+  );
+}
+
+export function Tag({ children, tone = 'neutral', className }: { children: React.ReactNode; tone?: 'neutral' | 'info' | 'warn' | 'danger' | 'ok' | 'accent'; className?: string }) {
+  const tones = {
+    neutral: 'bg-muted text-[#595959]',
+    info: 'bg-accent-2 text-foreground',
+    warn: 'bg-warning/40 text-[#6b4f12]',
+    danger: 'bg-destructive/10 text-destructive',
+    ok: 'bg-success/25 text-[#2f5a3c]',
+    accent: 'bg-accent text-foreground',
+  };
+  return <span className={cn('inline-flex h-5 items-center rounded-full px-2 text-xs font-medium whitespace-nowrap', tones[tone], className)}>{children}</span>;
+}
