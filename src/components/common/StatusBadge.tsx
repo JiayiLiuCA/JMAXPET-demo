@@ -1,8 +1,7 @@
 import { cn } from '@/lib/utils';
-import { AIRLINE_STATUS_COLOR, PRIORITY_COLOR, STEP_STATUS_COLOR, TASK_STATUS_COLOR } from '@/lib/buckets';
+import { ACCOMPANY_STATUS_COLOR, AIRLINE_STATUS_COLOR, CASE_TYPE_COLOR, STAGE_COLOR, STEP_STATUS_COLOR, TASK_STATUS_COLOR, TASK_TYPE_COLOR } from '@/lib/buckets';
 
-const STAGE_COLOR: Record<string, string> = { 新建: '#8f8f8f', 办理签证: '#c9c3d6', 等待文件: '#d2ac72', 落实置: '#cbb2a6', 核机中: '#5b7fa6', 出发: '#2b5672', 到达: '#7fa88b', 完成: '#7fa88b', 已取消: '#e03939' };
-const MAPS = { priority: PRIORITY_COLOR, airline: AIRLINE_STATUS_COLOR, step: STEP_STATUS_COLOR, task: TASK_STATUS_COLOR, stage: STAGE_COLOR } as const;
+const MAPS = { airline: AIRLINE_STATUS_COLOR, accompany: ACCOMPANY_STATUS_COLOR, step: STEP_STATUS_COLOR, task: TASK_STATUS_COLOR, stage: STAGE_COLOR, caseType: CASE_TYPE_COLOR, taskType: TASK_TYPE_COLOR } as const;
 
 export function StatusBadge({ value, kind, className, color }: { value: string; kind?: keyof typeof MAPS; className?: string; color?: string }) {
   const c = color ?? (kind ? MAPS[kind][value] : undefined) ?? '#8f8f8f';

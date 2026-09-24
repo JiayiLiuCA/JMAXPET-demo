@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Bell, BellRing, PlaneTakeoff, AlarmClock, ClipboardList, Info, CheckCheck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Bell, BellRing, PlaneTakeoff, AlarmClock, ClipboardList, Info, CheckCheck, Siren, MessageSquareText } from 'lucide-react';
 import { useAppStore, useCurrentUser } from '@/store/useAppStore';
 import { useOpenCase } from '@/lib/navigation';
 import { users } from '@/data/users';
@@ -13,11 +14,12 @@ import { fmtDateTime } from '@/lib/dates';
 import { cn } from '@/lib/utils';
 import type { NotificationKind } from '@/types';
 
-const KIND_ICON: Record<NotificationKind, typeof Bell> = { flight_change: PlaneTakeoff, reminder: AlarmClock, task: ClipboardList, system: Info };
-const KIND_COLOR: Record<NotificationKind, string> = { flight_change: '#e03939', reminder: '#d2ac72', task: '#5b7fa6', system: '#8f8f8f' };
+const KIND_ICON: Record<NotificationKind, typeof Bell> = { flight_change: PlaneTakeoff, reminder: AlarmClock, task: ClipboardList, system: Info, alert: Siren, sms: MessageSquareText };
+const KIND_COLOR: Record<NotificationKind, string> = { flight_change: '#e03939', reminder: '#d2ac72', task: '#5b7fa6', system: '#8f8f8f', alert: '#e03939', sms: '#7a8fc9' };
 
 export function NotificationBell({ compact }: { compact?: boolean }) {
   const user = useCurrentUser();
+  const router = useRouter();
   const notifications = useAppStore((s) => s.notifications);
   const markRead = useAppStore((s) => s.markRead);
   const markAllRead = useAppStore((s) => s.markAllRead);
@@ -30,7 +32,7 @@ export function NotificationBell({ compact }: { compact?: boolean }) {
   const list = useMemo(() => notifications.filter((n) => n.to_user_id === target).sort((a, b) => b.created_at.localeCompare(a.created_at)), [notifications, target]);
   const unreadMine = notifications.filter((n) => n.to_user_id === user?.id && !n.read).length;
   if (!user) return null;
-  const canOpenCase = user.role !== 'driver';
+  const canOpenCase = user.role !== 'driver' && user.role !== 'sales';
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -45,7 +47,7 @@ export function NotificationBell({ compact }: { compact?: boolean }) {
           <div className="text-sm font-medium">通知中心</div>
           <div className="flex items-center gap-1.5">
             {isAdmin && (
-              <SimpleSelect value={filterUser} onChange={setFilterUser} options={users.map((u) => ({ value: u.id, label: u.name }))} allowEmpty="我（Rita）" className="h-7 w-32 text-xs" />
+              <SimpleSelect value={filterUser} onChange={setFilterUser} options={users.map((u) => ({ value: u.id, label: u.name }))} allowEmpty={`我（${user.name}）`} className="h-7 w-32 text-xs" />
             )}
             <Button size="xs" variant="ghost" onClick={() => markAllRead(target!)}><CheckCheck /> 全部已读</Button>
           </div>
@@ -58,7 +60,11 @@ export function NotificationBell({ compact }: { compact?: boolean }) {
               return (
                 <button
                   key={n.id}
-                  onClick={() => { markRead(n.id); if (n.case_id && canOpenCase) { openCase(n.case_id); setOpen(false); } }}
+                  onClick={() => {
+                    markRead(n.id);
+                    if (n.alert_id) { router.push('/alerts'); setOpen(false); return; }
+                    if (n.case_id && canOpenCase) { openCase(n.case_id); setOpen(false); }
+                  }}
                   className={cn('flex gap-3 border-b px-3 py-2.5 text-left transition-colors hover:bg-muted/60', !n.read && 'bg-accent-2/30')}
                 >
                   <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full" style={{ background: `${KIND_COLOR[n.kind]}22`, color: KIND_COLOR[n.kind] }}>

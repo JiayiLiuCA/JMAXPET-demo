@@ -7,12 +7,12 @@ import { roles } from '@/data/roles';
 import { canViewPage } from '@/lib/permissions';
 import { pageByPath, pathOf } from '@/components/shell/nav';
 import { Sidebar } from '@/components/shell/Sidebar';
-import { Topbar, MobileTopbar } from '@/components/shell/Topbar';
+import { Topbar, MobileTopbar, MobileBottomNav } from '@/components/shell/Topbar';
 import type { User } from '@/types';
 
-/** Case 详情子页面：除司机外都可进入，页面内再按可见范围判断 */
+/** Case 详情子页面：司机、销售不能进入；页面内再按可见范围判断 */
 const allowedPath = (user: User, pathname: string) => {
-  if (/^\/cases\/[^/]+$/.test(pathname)) return user.role !== 'driver';
+  if (/^\/cases\/[^/]+$/.test(pathname)) return user.role !== 'driver' && user.role !== 'sales';
   const page = pageByPath(pathname);
   return !page || canViewPage(user, page.key);
 };
@@ -36,15 +36,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (roles[user.role].mobile) {
     return (
       <div className="min-h-screen bg-[#ece7e8]/60">
-        <div className="mx-auto min-h-screen w-full max-w-[27rem] bg-background shadow-xl ring-1 ring-foreground/10">
+        <div className="mx-auto flex min-h-screen w-full max-w-[27rem] flex-col bg-background shadow-xl ring-1 ring-foreground/10">
           <MobileTopbar />
-          <main className="p-3">{children}</main>
+          <main className="flex-1 p-3">{children}</main>
+          <MobileBottomNav />
         </div>
       </div>
     );
   }
 
-  // 桌面：左侧栏固定不动，右侧（顶栏 + 内容）独立滚动
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />

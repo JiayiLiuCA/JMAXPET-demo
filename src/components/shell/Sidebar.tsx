@@ -5,15 +5,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { PAGE_META, roles } from '@/data/roles';
 import { NAV_ICON } from '@/components/shell/nav';
-import { useCurrentUser } from '@/store/useAppStore';
+import { useAppStore, useCurrentUser } from '@/store/useAppStore';
 import { cn } from '@/lib/utils';
 import { SEED_TODAY } from '@/lib/dates';
 
 export function Sidebar() {
   const user = useCurrentUser();
   const pathname = usePathname();
+  const alerts = useAppStore((s) => s.alerts);
   if (!user) return null;
   const pages = PAGE_META.filter((p) => roles[user.role].pages.includes(p.key));
+  const pendingAlerts = alerts.filter((a) => !a.resolved && (user.role === 'admin' || a.targets.includes(user.id)) && !a.confirmations[user.id]).length;
   return (
     <aside className="hidden w-56 shrink-0 flex-col border-r border-border bg-sidebar md:flex">
       <div className="flex h-16 items-center px-4">
@@ -36,12 +38,13 @@ export function Sidebar() {
             >
               <Icon className="size-4" />
               {p.label}
+              {p.key === 'alerts' && pendingAlerts > 0 && <span className="ml-auto rounded-full bg-destructive px-1.5 text-[0.65rem] font-semibold text-white">{pendingAlerts}</span>}
             </Link>
           );
         })}
       </nav>
       <div className="px-4 py-3 text-[0.7rem] leading-relaxed text-muted-foreground">
-        Mock Demo · seed 日期 {SEED_TODAY}
+        一期 Demo · seed 日期 {SEED_TODAY}
         <br />
         数据仅在内存，刷新即重置
       </div>

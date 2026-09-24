@@ -6,7 +6,7 @@ import { AIRPORT_CITY } from '@/data/options';
 import { petEmojiOf } from '@/data/cases';
 import { useAppStore } from '@/store/useAppStore';
 import { useOpenCase } from '@/lib/navigation';
-import { fmtDate, fmtTime } from '@/lib/dates';
+import { fmtMDW, fmtTime } from '@/lib/dates';
 import { upcomingFlights } from '@/lib/buckets';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -31,27 +31,31 @@ export function FlightTable({ cases }: { cases: Case[] }) {
           <TableHeader>
             <TableRow className="text-xs text-muted-foreground hover:bg-transparent">
               <TableHead className="h-8">宠物</TableHead>
+              <TableHead className="h-8">类型</TableHead>
               <TableHead className="h-8">航班</TableHead>
               <TableHead className="h-8">路线</TableHead>
               <TableHead className="h-8">起飞</TableHead>
+              <TableHead className="h-8">落地</TableHead>
               <TableHead className="h-8">倒计时</TableHead>
-              <TableHead className="h-8">仓位状态</TableHead>
+              <TableHead className="h-8">状态</TableHead>
               <TableHead className="h-8">AWB</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {list.map(({ c, flight, days }) => {
+            {list.map(({ c, flights, days }) => {
+              const first = flights[0]; const last = flights[flights.length - 1];
               const label = c.airline_confirmed === '已到达' ? '已到达' : c.airline_confirmed === '已起飞' ? '已起飞' : days < 0 ? '昨天' : days === 0 ? '今天起飞' : days === 1 ? '明天起飞' : `${days} 天后`;
-              const last = c.flights[c.flights.length - 1];
               return (
                 <TableRow key={c.id} onClick={() => openCase(c.id)} className="cursor-pointer">
                   <TableCell><span className="mr-1.5">{petEmojiOf(c)}</span><span className="font-medium">{c.pet_name}</span><span className="ml-1.5 font-mono text-xs text-muted-foreground">{c.file_no}</span></TableCell>
-                  <TableCell className="font-mono">{flight.flight_no}{c.flights.length > 1 ? ` + ${last.flight_no}` : ''}</TableCell>
-                  <TableCell className="text-xs">{flight.from_code} {AIRPORT_CITY[flight.from_code]} → {last.to_code} {AIRPORT_CITY[last.to_code]}{c.flights.length > 1 ? `（经 ${flight.to_code}）` : ''}</TableCell>
-                  <TableCell className="text-sm">{fmtDate(flight.dep_time)} {fmtTime(flight.dep_time)}</TableCell>
+                  <TableCell><StatusBadge value={c.case_type} kind="caseType" /></TableCell>
+                  <TableCell className="font-mono">{first.flight_no}{flights.length > 1 ? ` + ${last.flight_no}` : ''}</TableCell>
+                  <TableCell className="text-xs">{first.from_code} {AIRPORT_CITY[first.from_code]} → {last.to_code} {AIRPORT_CITY[last.to_code]}{flights.length > 1 ? `（经 ${first.to_code}）` : ''}</TableCell>
+                  <TableCell className="text-sm">{fmtMDW(first.dep_time.slice(0, 10))} {fmtTime(first.dep_time)}</TableCell>
+                  <TableCell className="text-sm">{fmtMDW(last.arr_time.slice(0, 10))} {fmtTime(last.arr_time)} <span className="text-[0.65rem] text-muted-foreground">local</span></TableCell>
                   <TableCell><span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', days <= 1 && !['已起飞', '已到达'].includes(c.airline_confirmed) ? 'bg-warning/50 text-[#6b4f12]' : 'bg-muted text-muted-foreground')}>{label}</span></TableCell>
-                  <TableCell><StatusBadge value={c.airline_confirmed} kind="airline" /></TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">{flight.awb || '—'}</TableCell>
+                  <TableCell>{c.case_type === '随机' ? <StatusBadge value={c.accompany_status} kind="accompany" /> : <StatusBadge value={c.airline_confirmed} kind="airline" />}</TableCell>
+                  <TableCell className="font-mono text-xs text-muted-foreground">{first.awb || '—'}</TableCell>
                 </TableRow>
               );
             })}

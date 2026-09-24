@@ -1,132 +1,98 @@
-import type { WorkflowTemplate } from '@/types';
+import type { WorkflowStep, WorkflowTemplate } from '@/types';
 
 /**
- * Workflow 模板：每步 offset_days 相对 departure_date（负数 = 出发前 N 天）。
- * 新建 Case 时按 departure_date 倒推每一步计划日期。
+ * 文件办理 workflow 模板（按客户文档整理）。
+ * 每步 offset_days 相对出发日（负数 = 出发前 N 天）；required_docs 非空 = 该步需上传附件后才能点完成。
+ * 模板只含"文件 + 订舱"部分；送机 / 清关 / 收尾款 / 到家 等收尾步骤按 Case 类型（托运 / 随机 / 仅代办文件）
+ * 与服务范围（全包 / 仅订舱）在 lib/workflow.ts 里拼接。
  */
+const D = 'ops_docs' as const;
+const B = 'booking_cargo' as const;
+
+const step = (key: string, label: string, offset_days: number, offset_rule: string, required_docs: string[] = [], description = '', owner_role: WorkflowStep['owner_role'] = D): WorkflowStep =>
+  ({ key, label, owner_role, offset_days, offset_rule, required_docs, description });
+
+const chip = (d: number) => step('chip', '芯片', d, `出发前 ${-d} 天`, ['芯片植入证明 / 扫描照片'], '扫描确认 15 位 ISO 芯片，格式 xxx-xxx-xxx-xxx-xxx');
+const rabies = (d: number, label = '狂犬疫苗', desc = '疫苗有效期需覆盖出发日') => step('rabies', label, d, `出发前 ${-d} 天`, ['狂犬疫苗证书'], desc);
+const rabies2 = (d: number) => step('rabies2', '第二针狂犬', d, `第一针过期前`, ['第二针狂犬证书'], '第一针过期前接种');
+const combo = (d: number, label: string) => step('combo', label, d, `出发前 ${-d} 天`, ['联合疫苗证书'], '');
+const blood = (d: number, desc: string) => step('blood', '采血', d, `出发前 ${-d} 天`, ['采血单 / 血清报告'], desc);
+const booking = (d: number) => step('booking', '订舱', d, `出发前 ${-d} 天`, ['AWB / 航司确认件'], '前期文件办完后转给订舱同事', B);
+const health = (d: number, rule: string) => step('health_cert', '健康证', d, rule, ['健康证（兽医签发）'], '');
+const stamp = (d: number, rule = '健康证后立即') => step('stamp', '盖章', d, rule, ['盖章后的健康证'], '加拿大 CFIA，美国 USDA');
+const quarantine = (d: number) => step('quarantine_cert', '出入境检疫证', d, '出发前 13 天内', ['出入境检疫证'], '随时确认宠物位置');
+
 export const workflows: WorkflowTemplate[] = [
+  // ---------- 出发地：中国 ----------
   {
-    id: 'ca_cn_cargo',
-    name: '加拿大 → 中国（托运，宠物单独走）',
-    short: '加→中 托运',
-    origin_country: '加拿大',
-    dest_country: '中国',
-    mode: '托运',
-    stamp_authority: 'CFIA',
+    id: 'cn_ca', name: '中国 → 加拿大（猫 & 狗）', short: '中→加', origin_region: 'CN', origin_countries: ['中国'], dest_country: '加拿大', species: ['cat', 'dog', 'rabbit'], stamp_authority: '中国海关',
+    steps: [chip(-40), rabies(-35, '狂犬（未过期）'), booking(-25), quarantine(-10)],
+  },
+  {
+    id: 'cn_us_cat', name: '中国 → 美国（猫）', short: '中→美 猫', origin_region: 'CN', origin_countries: ['中国'], dest_country: '美国', species: ['cat'], stamp_authority: '中国海关',
+    steps: [chip(-40), rabies(-35, '狂犬（未过期）'), booking(-25), quarantine(-10)],
+  },
+  {
+    id: 'cn_us_dog', name: '中国 → 美国（狗，正常文件）', short: '中→美 狗', origin_region: 'CN', origin_countries: ['中国'], dest_country: '美国', species: ['dog'], stamp_authority: '中国海关',
     steps: [
-      { key: 'chip', label: '芯片确认', owner_role: 'ops_docs', offset_days: -90, offset_rule: '出发前 90 天', required_docs: ['芯片植入证明'], description: '扫描确认 15 位 ISO 芯片，核对与疫苗本一致' },
-      { key: 'rabies', label: '狂犬疫苗', owner_role: 'ops_docs', offset_days: -75, offset_rule: '出发前 75 天', required_docs: ['狂犬疫苗证书'], description: '芯片植入后接种，疫苗有效期需覆盖抵达日' },
-      { key: 'wait21', label: '21 天等待期', owner_role: 'ops_docs', offset_days: -54, offset_rule: '狂犬后 21 天', required_docs: [], description: '狂犬疫苗接种后至少 21 天方可采血/出行' },
-      { key: 'favn', label: '采血 FAVN（如需）', owner_role: 'ops_docs', offset_days: -50, offset_rule: '出发前 50 天', required_docs: ['FAVN 采血单'], description: '到指定医院采血，寄送 KSU 等认可实验室' },
-      { key: 'serum', label: '等血清报告', owner_role: 'ops_docs', offset_days: -30, offset_rule: '采血后 3–4 周', required_docs: ['FAVN 血清报告'], description: '滴度 ≥ 0.5 IU/ml 合格' },
-      { key: 'permit', label: '申请许可 / 调档', owner_role: 'ops_docs', offset_days: -25, offset_rule: '出发前 25 天', required_docs: ['进口许可', '疫苗档案'], description: '向目的地口岸申请，调取完整疫苗档案' },
-      { key: 'booking', label: '订舱', owner_role: 'booking', offset_days: -21, offset_rule: '出发前 21 天', required_docs: ['AWB'], description: '向航司申请仓位，确认航班与航空箱尺寸' },
-      { key: 'hospital', label: '约医院办健康证', owner_role: 'ops_docs', offset_days: -9, offset_rule: '出发前 9 天', required_docs: ['健康证（兽医签发）'], description: '预约认可兽医，完成 IHC 国际健康证' },
-      { key: 'cfia', label: 'CFIA 盖章', owner_role: 'ops_docs', offset_days: -6, offset_rule: '出发前 10 天内', required_docs: ['CFIA 背书健康证'], description: '携健康证到 CFIA 办公室背书盖章' },
-      { key: 'driver_airport', label: '安排司机送机', owner_role: 'ops_logistics', offset_days: -1, offset_rule: '出发前 1 天确认', required_docs: [], description: '按航司 cut-off 时间提前 4–6 小时到货站' },
-      { key: 'flight_track', label: '航班跟踪', owner_role: 'ops_logistics', offset_days: 0, offset_rule: '出发当天', required_docs: [], description: '跟踪起飞 / 中转 / 落地，同步主人' },
-      { key: 'customs', label: '清关', owner_role: 'ops_logistics', offset_days: 1, offset_rule: '落地当天', required_docs: ['清关委托书'], description: '目的地代理清关，视口岸可能有隔离' },
-      { key: 'home', label: '到家', owner_role: 'ops_logistics', offset_days: 1, offset_rule: '落地当天', required_docs: [], description: '交付主人，收取到家照片/视频' },
-      { key: 'final_payment', label: '收尾款', owner_role: 'admin', offset_days: 2, offset_rule: '到家后 2 天内', required_docs: [], description: '核对费用明细，收齐尾款' },
-      { key: 'archive', label: '归档', owner_role: 'admin', offset_days: 5, offset_rule: '结案后 5 天', required_docs: [], description: '文件归档、结案' },
+      chip(-120), rabies(-110), blood(-85, '狂犬打完至少 21 天后采血'),
+      step('kennel_apply', '申请动物房', -60, '出发前 60 天', ['动物房申请回执'], ''),
+      step('cdc_vet', '兽医签署 CDC 文件', -45, '出发前 45 天', ['CDC 文件（兽医签署）'], ''),
+      step('screwworm', 'Screwworm 认证', -30, '出发前 30 天', ['Screwworm 认证'], ''),
+      booking(-25), quarantine(-10),
+      step('cdc_permit', 'CDC 入境许可', -8, '出发前 8 天', ['CDC 入境许可'], ''),
     ],
   },
   {
-    id: 'ca_cn_accompany',
-    name: '加拿大 → 中国（主人随行，宠物同机）',
-    short: '加→中 随行',
-    origin_country: '加拿大',
-    dest_country: '中国',
-    mode: '随行',
-    stamp_authority: 'CFIA',
+    id: 'cn_us_dog_return', name: '中国 → 美国（狗，返美文件）', short: '中→美 返美', origin_region: 'CN', origin_countries: ['中国'], dest_country: '美国', species: ['dog'], stamp_authority: '中国海关',
     steps: [
-      { key: 'chip', label: '芯片确认', owner_role: 'ops_docs', offset_days: -60, offset_rule: '出发前 60 天', required_docs: ['芯片植入证明'], description: '扫描确认 15 位 ISO 芯片' },
-      { key: 'rabies', label: '狂犬疫苗', owner_role: 'ops_docs', offset_days: -45, offset_rule: '出发前 45 天', required_docs: ['狂犬疫苗证书'], description: '接种后 21 天方可出行' },
-      { key: 'favn', label: '采血 FAVN（如需）', owner_role: 'ops_docs', offset_days: -40, offset_rule: '出发前 40 天', required_docs: ['FAVN 采血单'], description: '视目的地口岸要求' },
-      { key: 'serum', label: '等血清报告', owner_role: 'ops_docs', offset_days: -20, offset_rule: '采血后 3 周', required_docs: ['FAVN 血清报告'], description: '' },
-      { key: 'permit', label: '申请许可 / 调档', owner_role: 'ops_docs', offset_days: -15, offset_rule: '出发前 15 天', required_docs: ['进口许可'], description: '' },
-      { key: 'airline_policy', label: '确认航司随行政策', owner_role: 'ops_docs', offset_days: -14, offset_rule: '出发前 14 天', required_docs: ['航司宠物随行确认'], description: '确认舱内 / 行李舱额度、箱体尺寸、季节限制' },
-      { key: 'hospital', label: '约医院办健康证', owner_role: 'ops_docs', offset_days: -9, offset_rule: '出发前 9 天', required_docs: ['健康证（兽医签发）'], description: '' },
-      { key: 'cfia', label: 'CFIA 盖章', owner_role: 'ops_docs', offset_days: -6, offset_rule: '出发前 10 天内', required_docs: ['CFIA 背书健康证'], description: '' },
-      { key: 'remind_checkin', label: '提醒主人值机', owner_role: 'ops_logistics', offset_days: -1, offset_rule: '出发前 1 天', required_docs: [], description: '提醒提前 3 小时到柜台办理宠物托运手续，带齐文件原件' },
-      { key: 'flight_track', label: '航班跟踪', owner_role: 'ops_logistics', offset_days: 0, offset_rule: '出发当天', required_docs: [], description: '' },
-      { key: 'customs', label: '入境查验', owner_role: 'ops_logistics', offset_days: 1, offset_rule: '落地当天', required_docs: [], description: '主人随行携带文件入境' },
-      { key: 'home', label: '到家', owner_role: 'ops_logistics', offset_days: 1, offset_rule: '落地当天', required_docs: [], description: '' },
-      { key: 'final_payment', label: '收尾款', owner_role: 'admin', offset_days: 2, offset_rule: '到家后 2 天内', required_docs: [], description: '' },
-      { key: 'archive', label: '归档', owner_role: 'admin', offset_days: 5, offset_rule: '结案后 5 天', required_docs: [], description: '' },
+      chip(-40), rabies(-35, '美国狂犬', '在美接种的狂犬疫苗证书'),
+      step('return_docs', '返美文件', -30, '出发前 30 天', ['返美文件'], ''),
+      step('screwworm', 'Screwworm 认证', -28, '出发前 28 天', ['Screwworm 认证'], ''),
+      booking(-25),
+      step('cdc_permit', 'CDC 入境许可', -8, '出发前 8 天', ['CDC 入境许可'], ''),
     ],
   },
+  // ---------- 出发地：北美 ----------
   {
-    id: 'us_cn_cargo',
-    name: '美国 → 中国（托运）',
-    short: '美→中 托运',
-    origin_country: '美国',
-    dest_country: '中国',
-    mode: '托运',
-    stamp_authority: 'USDA',
-    steps: [
-      { key: 'chip', label: '芯片确认', owner_role: 'ops_docs', offset_days: -90, offset_rule: '出发前 90 天', required_docs: ['芯片植入证明'], description: '' },
-      { key: 'rabies', label: '狂犬疫苗', owner_role: 'ops_docs', offset_days: -75, offset_rule: '出发前 75 天', required_docs: ['狂犬疫苗证书'], description: '' },
-      { key: 'wait21', label: '21 天等待期', owner_role: 'ops_docs', offset_days: -54, offset_rule: '狂犬后 21 天', required_docs: [], description: '' },
-      { key: 'favn', label: '采血 FAVN（如需）', owner_role: 'ops_docs', offset_days: -50, offset_rule: '出发前 50 天', required_docs: ['FAVN 采血单'], description: '' },
-      { key: 'serum', label: '等血清报告', owner_role: 'ops_docs', offset_days: -30, offset_rule: '采血后 3–4 周', required_docs: ['FAVN 血清报告'], description: '' },
-      { key: 'permit', label: '申请许可 / 调档', owner_role: 'ops_docs', offset_days: -25, offset_rule: '出发前 25 天', required_docs: ['进口许可', '疫苗档案'], description: '' },
-      { key: 'cdc_form', label: 'CDC 表格', owner_role: 'ops_docs', offset_days: -22, offset_rule: '出发前 22 天', required_docs: ['CDC Dog Import Form'], description: '美方出境备案，犬只需提交 CDC 表格' },
-      { key: 'booking', label: '订舱', owner_role: 'booking', offset_days: -21, offset_rule: '出发前 21 天', required_docs: ['AWB'], description: '' },
-      { key: 'hospital', label: '约医院办健康证', owner_role: 'ops_docs', offset_days: -9, offset_rule: '出发前 9 天', required_docs: ['健康证（USDA 认可兽医）'], description: '' },
-      { key: 'usda', label: 'USDA 盖章', owner_role: 'ops_docs', offset_days: -6, offset_rule: '出发前 10 天内', required_docs: ['USDA APHIS 背书'], description: 'VEHCS 线上提交或到 USDA 办公室背书' },
-      { key: 'driver_airport', label: '安排司机送机', owner_role: 'ops_logistics', offset_days: -1, offset_rule: '出发前 1 天确认', required_docs: [], description: '' },
-      { key: 'flight_track', label: '航班跟踪', owner_role: 'ops_logistics', offset_days: 0, offset_rule: '出发当天', required_docs: [], description: '' },
-      { key: 'customs', label: '清关', owner_role: 'ops_logistics', offset_days: 1, offset_rule: '落地当天', required_docs: ['清关委托书'], description: '' },
-      { key: 'home', label: '到家', owner_role: 'ops_logistics', offset_days: 1, offset_rule: '落地当天', required_docs: [], description: '' },
-      { key: 'final_payment', label: '收尾款', owner_role: 'admin', offset_days: 2, offset_rule: '到家后 2 天内', required_docs: [], description: '' },
-      { key: 'archive', label: '归档', owner_role: 'admin', offset_days: 5, offset_rule: '结案后 5 天', required_docs: [], description: '' },
-    ],
+    id: 'na_cn', name: '加拿大 & 美国 → 中国大陆（猫 & 狗）', short: '北美→中国', origin_region: 'NA', origin_countries: ['加拿大', '美国'], dest_country: '中国', species: ['cat', 'dog', 'rabbit'], stamp_authority: 'CFIA / USDA',
+    steps: [chip(-120), rabies(-110, '第一针狂犬'), rabies2(-75), blood(-70, '第二针当天或第二针打完 3 周后 4 个月内'), booking(-25), health(-10, '航班出发前 13 天内'), stamp(-6)],
   },
   {
-    id: 'cn_ca_cargo',
-    name: '中国 → 加拿大（托运）',
-    short: '中→加 托运',
-    origin_country: '中国',
-    dest_country: '加拿大',
-    mode: '托运',
-    stamp_authority: '中国海关',
-    steps: [
-      { key: 'rabies', label: '狂犬疫苗', owner_role: 'ops_docs', offset_days: -45, offset_rule: '出发前 45 天', required_docs: ['狂犬疫苗证书（英文）'], description: '加拿大要求有效狂犬疫苗证书，英文或法文' },
-      { key: 'booking', label: '订舱', owner_role: 'booking', offset_days: -20, offset_rule: '出发前 20 天', required_docs: ['AWB'], description: '' },
-      { key: 'health_cert', label: '健康证', owner_role: 'ops_docs', offset_days: -9, offset_rule: '出发前 10 天', required_docs: ['兽医健康证'], description: '官方指定医院开具' },
-      { key: 'cn_quarantine', label: '中国出境检疫', owner_role: 'ops_docs', offset_days: -5, offset_rule: '出发前 7 天内', required_docs: ['出境动物检疫证书'], description: '海关出境检疫，取得动物卫生证书' },
-      { key: 'driver_airport', label: '送机', owner_role: 'ops_logistics', offset_days: -1, offset_rule: '出发前 1 天确认', required_docs: [], description: '' },
-      { key: 'flight_track', label: '航班跟踪', owner_role: 'ops_logistics', offset_days: 0, offset_rule: '出发当天', required_docs: [], description: '' },
-      { key: 'cfia_arrival', label: '加拿大入境 CFIA 检查', owner_role: 'ops_logistics', offset_days: 0, offset_rule: '落地当天', required_docs: ['CFIA 入境检查单'], description: '货运入境需 CFIA 检查并缴费' },
-      { key: 'home', label: '到家', owner_role: 'ops_logistics', offset_days: 0, offset_rule: '落地当天', required_docs: [], description: '' },
-      { key: 'final_payment', label: '收尾款', owner_role: 'admin', offset_days: 2, offset_rule: '到家后 2 天内', required_docs: [], description: '' },
-      { key: 'archive', label: '归档', owner_role: 'admin', offset_days: 5, offset_rule: '结案后 5 天', required_docs: [], description: '' },
-    ],
+    id: 'na_hk', name: '加拿大 & 美国 → 香港（猫 & 狗）', short: '北美→香港', origin_region: 'NA', origin_countries: ['加拿大', '美国'], dest_country: '中国香港', species: ['cat', 'dog', 'rabbit'], stamp_authority: 'CFIA / USDA',
+    steps: [chip(-60), rabies(-50), combo(-48, 'FVRCP / DHPP'), booking(-25), health(-10, '航班出发前 13 天内'), stamp(-6)],
   },
   {
-    id: 'cn_au_cargo',
-    name: '中国 → 澳大利亚（托运）',
-    short: '中→澳 托运',
-    origin_country: '中国',
-    dest_country: '澳大利亚',
-    mode: '托运',
-    stamp_authority: '中国海关 / DAFF',
-    steps: [
-      { key: 'chip', label: '芯片确认', owner_role: 'ops_docs', offset_days: -220, offset_rule: '出发前 220 天', required_docs: ['芯片植入证明'], description: '' },
-      { key: 'rabies', label: '狂犬疫苗', owner_role: 'ops_docs', offset_days: -210, offset_rule: '出发前 210 天', required_docs: ['狂犬疫苗证书'], description: '' },
-      { key: 'rnatt', label: 'RNATT 采血', owner_role: 'ops_docs', offset_days: -190, offset_rule: '出发前 190 天', required_docs: ['RNATT 采血单'], description: '滴度合格后需等待 180 天' },
-      { key: 'rnatt_wait', label: '180 天等待期', owner_role: 'ops_docs', offset_days: -60, offset_rule: '采血后 180 天', required_docs: [], description: '' },
-      { key: 'permit', label: '申请进口许可', owner_role: 'ops_docs', offset_days: -50, offset_rule: '出发前 50 天', required_docs: ['DAFF 进口许可'], description: '' },
-      { key: 'booking', label: '订舱', owner_role: 'booking', offset_days: -30, offset_rule: '出发前 30 天', required_docs: ['AWB'], description: '' },
-      { key: 'health_cert', label: '健康证 + 体内外驱虫', owner_role: 'ops_docs', offset_days: -5, offset_rule: '出发前 5 天', required_docs: ['兽医健康证'], description: '' },
-      { key: 'cn_quarantine', label: '中国出境检疫', owner_role: 'ops_docs', offset_days: -3, offset_rule: '出发前 3 天', required_docs: ['出境动物检疫证书'], description: '' },
-      { key: 'driver_airport', label: '送机', owner_role: 'ops_logistics', offset_days: -1, offset_rule: '出发前 1 天确认', required_docs: [], description: '' },
-      { key: 'flight_track', label: '航班跟踪', owner_role: 'ops_logistics', offset_days: 0, offset_rule: '出发当天', required_docs: [], description: '' },
-      { key: 'quarantine_au', label: '墨尔本隔离 10 天', owner_role: 'ops_logistics', offset_days: 1, offset_rule: '落地后 10 天', required_docs: [], description: '' },
-      { key: 'home', label: '到家', owner_role: 'ops_logistics', offset_days: 11, offset_rule: '隔离结束', required_docs: [], description: '' },
-      { key: 'final_payment', label: '收尾款', owner_role: 'admin', offset_days: 12, offset_rule: '到家后 2 天内', required_docs: [], description: '' },
-      { key: 'archive', label: '归档', owner_role: 'admin', offset_days: 15, offset_rule: '结案后', required_docs: [], description: '' },
+    id: 'ca_us', name: '加拿大 → 美国（猫 & 狗）', short: '加→美', origin_region: 'NA', origin_countries: ['加拿大'], dest_country: '美国', species: ['cat', 'dog'], stamp_authority: '无需盖章',
+    steps: [rabies(-30, '有效期内狂犬'), booking(-20), step('cdc_permit', 'CDC 入境许可', -10, '出发前 10 天', ['CDC 入境许可'], '犬只需要，猫可跳过')],
+  },
+  {
+    id: 'na_uk_cat', name: '加拿大 & 美国 → 英国（猫）', short: '北美→英国 猫', origin_region: 'NA', origin_countries: ['加拿大', '美国'], dest_country: '英国', species: ['cat'], stamp_authority: 'CFIA / USDA',
+    steps: [chip(-45), rabies(-40, '狂犬', '接种 21 天后方可出发'), booking(-25), health(-8, '出发前 10 天内（美国：出发前 5 天内）'), stamp(-5)],
+  },
+  {
+    id: 'na_uk_dog', name: '加拿大 & 美国 → 英国（狗）', short: '北美→英国 狗', origin_region: 'NA', origin_countries: ['加拿大', '美国'], dest_country: '英国', species: ['dog'], stamp_authority: 'CFIA / USDA',
+    steps: [chip(-45), rabies(-40, '狂犬', '接种 21 天后方可出发'), booking(-25), step('deworm', '绦虫驱虫', -4, '航班出发前 5 天内', ['驱虫记录（含 Praziquantel）'], '需包含 Praziquantel'), health(-4, '出发前 5 天内'), stamp(-3)],
+  },
+  {
+    id: 'na_dxb_cat', name: '加拿大 & 美国 → 迪拜（猫）', short: '北美→迪拜 猫', origin_region: 'NA', origin_countries: ['加拿大', '美国'], dest_country: '阿联酋', species: ['cat'], stamp_authority: 'CFIA / USDA',
+    steps: [chip(-90), rabies(-85), combo(-83, 'FVRCP'), blood(-60, '狂犬打完至少 21 天后采血'), step('uae_permit', '申请 UAE 许可', -40, '出发前 40 天', ['UAE 进口许可'], ''), booking(-25), step('deworm', '体内驱虫', -13, '航班出发前 14 天', ['驱虫记录（含 Praziquantel）'], ''), health(-2, '航班出发前 48 小时（美国：提前 9 天）'), stamp(-1)],
+  },
+  {
+    id: 'na_dxb_dog', name: '加拿大 & 美国 → 迪拜（狗）', short: '北美→迪拜 狗', origin_region: 'NA', origin_countries: ['加拿大', '美国'], dest_country: '阿联酋', species: ['dog'], stamp_authority: 'CFIA / USDA',
+    steps: [chip(-90), rabies(-85), combo(-83, 'DHPP + Lepto'), blood(-60, '狂犬打完至少 21 天后采血'), step('uae_permit', '申请 UAE 许可', -40, '出发前 40 天', ['UAE 进口许可'], ''), booking(-25), step('deworm', '体内驱虫', -13, '航班出发前 14 天', ['驱虫记录（含 Praziquantel）'], ''), health(-2, '航班出发前 48 小时（美国：提前 9 天）'), stamp(-1)],
+  },
+  {
+    id: 'ca_jp', name: '加拿大 → 日本（猫 & 狗）', short: '加→日本', origin_region: 'NA', origin_countries: ['加拿大'], dest_country: '日本', species: ['cat', 'dog'], stamp_authority: 'CFIA',
+    steps: [chip(-260), rabies(-250, '第一针狂犬'), rabies2(-220), blood(-210, '第二针当天或第二针打完 3 周后 4 个月内'), step('aqs', 'AQS 申报', -45, '出发前至少 40 天', ['AQS 申报回执'], ''), step('wait180', '180 天等待期', -30, '采血当天开始算', [], '等待期结束才能出发'), booking(-25), health(-8, '出发前 9 天内'), stamp(-5)],
+  },
+  {
+    id: 'na_au', name: '加拿大 & 美国 → 澳洲（猫 & 狗）', short: '北美→澳洲', origin_region: 'NA', origin_countries: ['加拿大', '美国'], dest_country: '澳大利亚', species: ['cat', 'dog'], stamp_authority: 'CFIA / USDA',
+    steps: [chip(-220), rabies(-210), step('other_docs', '其他文件（按官网步骤）', -100, '按官网', [], '猫狗、绝育与否差别大，按官网 step-by-step guide 办理，文件放在"其他文件"里'), booking(-30), health(-5, '出发前 5 天内'), stamp(-3)],
+    notes: '澳洲比较复杂，猫狗有很大区别，绝育和没绝育也有很大区别；workflow 只保留固定的芯片、狂犬，其余按官网。',
+    links: [
+      'https://www.agriculture.gov.au/biosecurity-trade/cats-dogs/how-to-import/step-by-step-guides/category-3-step-by-step-guide-for-cats',
+      'https://www.agriculture.gov.au/biosecurity-trade/cats-dogs/how-to-import/step-by-step-guides/category-3-step-by-step-guide-for-dogs',
     ],
   },
 ];

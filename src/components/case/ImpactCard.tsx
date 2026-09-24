@@ -4,7 +4,7 @@ import { AlertTriangle, Info, OctagonAlert, X, Truck, HeartPulse, Home, FileText
 import type { ImpactReport } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
 import { userName } from '@/data/users';
-import { fmtDate, fmtDateTime } from '@/lib/dates';
+import { fmtMD, fmtDateTime } from '@/lib/dates';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -23,9 +23,7 @@ export function ImpactCard({ report }: { report: ImpactReport }) {
         <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive"><AlertTriangle className="size-4" /></span>
         <div className="min-w-0 flex-1">
           <div className="font-heading text-sm font-semibold">航变影响清单 · {report.change_type}</div>
-          <div className="text-xs text-muted-foreground">
-            {fmtDate(report.old_date)}{report.new_date !== report.old_date ? ` → ${fmtDate(report.new_date)}` : ''} · 生成于 {fmtDateTime(report.created_at)}
-          </div>
+          <div className="text-xs text-muted-foreground">{fmtMD(report.old_date)}{report.new_date !== report.old_date ? ` → ${fmtMD(report.new_date)}` : ''} · 生成于 {fmtDateTime(report.created_at)} · 已进「紧急变动」</div>
         </div>
         <Button size="icon-xs" variant="ghost" onClick={clearImpact}><X /></Button>
       </div>
@@ -43,7 +41,7 @@ export function ImpactCard({ report }: { report: ImpactReport }) {
         })}
       </ul>
       <div className="mt-3 flex items-center gap-1.5 text-xs text-[#595959]">
-        <BellRing className="size-3.5" /> 已通知：{report.notified.map(userName).join('、') || '—'}
+        <BellRing className="size-3.5" /> 已通知（站内 + 短信）：{report.notified.map(userName).join('、') || '—'}
       </div>
     </div>
   );

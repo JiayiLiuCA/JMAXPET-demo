@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { ChevronDown, LogOut, RotateCcw } from 'lucide-react';
 import { users } from '@/data/users';
-import { roles } from '@/data/roles';
+import { roles, ROLE_ORDER } from '@/data/roles';
 import { useAppStore, useCurrentUser } from '@/store/useAppStore';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ export function UserSwitcher({ compact }: { compact?: boolean }) {
     switchUser(id);
     router.push(pathOf(roles[u.role].homePage));
   };
+  const ordered = ROLE_ORDER.flatMap((r) => users.filter((u) => u.role === r));
 
   return (
     <DropdownMenu>
@@ -40,19 +41,19 @@ export function UserSwitcher({ compact }: { compact?: boolean }) {
         {compact && <span className="text-xs font-medium">{user.name}</span>}
         <ChevronDown className="size-3.5 text-muted-foreground" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-72">
+      <DropdownMenuContent align="end" className="w-80">
         <DropdownMenuGroup>
-        <DropdownMenuLabel>一键切换账号（演示用，保留当前数据）</DropdownMenuLabel>
-        {users.map((u) => (
-          <DropdownMenuItem key={u.id} onClick={() => go(u.id)} className={u.id === user.id ? 'bg-accent/60' : ''}>
-            <UserAvatar user={u} size="sm" />
-            <span className="flex-1">
-              <span className="font-medium">{u.name}</span>
-              <span className="ml-1.5 text-xs text-muted-foreground">{u.title}</span>
-            </span>
-            {roles[u.role].mobile && <span className="rounded-full bg-accent-2 px-1.5 text-[0.65rem]">手机</span>}
-          </DropdownMenuItem>
-        ))}
+          <DropdownMenuLabel>一键切换账号（演示用，保留当前数据）</DropdownMenuLabel>
+          {ordered.map((u) => (
+            <DropdownMenuItem key={u.id} onClick={() => go(u.id)} className={u.id === user.id ? 'bg-accent/60' : ''}>
+              <UserAvatar user={u} size="sm" />
+              <span className="flex-1">
+                <span className="font-medium">{u.name}</span>
+                <span className="ml-1.5 text-xs text-muted-foreground">{u.title}</span>
+              </span>
+              {roles[u.role].mobile && <span className="rounded-full bg-accent-2 px-1.5 text-[0.65rem]">手机</span>}
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => resetDemo()}>

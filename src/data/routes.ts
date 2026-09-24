@@ -1,24 +1,35 @@
 import type { Route } from '@/types';
 
+/** 航线速查：按出发站点分区展示，主管可编辑（内存） */
 export const routes: Route[] = [
+  // ---- YYZ 多伦多 ----
   { id: 'r01', origin: 'YYZ', dest: 'HKG', airline: '国泰航空', airline_code: 'CX', flight_no: 'CX829', type: '直飞', dep_time: '01:45', arr_time: '05:35', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制'], notes: '5.35 落地香港，货站 cut-off 提前 6 小时' },
-  { id: 'r02', origin: 'YVR', dest: 'HKG', airline: '国泰航空', airline_code: 'CX', flight_no: 'CX865', type: '直飞', dep_time: '02:05', arr_time: '06:10', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制', '极端高低温季节停运'], notes: '6.10 落地香港，YVR 货站周末只收到 20:00' },
   { id: 'r03', origin: 'YYZ', dest: 'PVG', airline: '加拿大航空', airline_code: 'AC', flight_no: 'AC27', type: '直飞', dep_time: '12:15', arr_time: '14:45', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制', '夏季高温停运（6–9 月视温度）'], notes: '14.45 落地浦东，AC Cargo 需提前 48h 确认箱体尺寸' },
-  { id: 'r04', origin: 'YVR', dest: 'PVG', airline: '加拿大航空', airline_code: 'AC', flight_no: 'AC25', type: '直飞', dep_time: '12:35', arr_time: '15:40', arr_day_offset: 1, weekdays: '二四六', restrictions: ['短鼻犬限制'], notes: '15.40 落地浦东' },
   { id: 'r05', origin: 'YYZ', dest: 'PEK', airline: '加拿大航空', airline_code: 'AC', flight_no: 'AC31', type: '直飞', dep_time: '11:25', arr_time: '13:30', arr_day_offset: 1, weekdays: '一三五日', restrictions: ['短鼻犬限制'], notes: '13.30 落地首都机场，北京口岸隔离 7 天（有条件免隔离）' },
   { id: 'r06', origin: 'YYZ', dest: 'HKG', airline: '汉莎航空', airline_code: 'LH', flight_no: 'LH471', type: '中转', via: 'FRA', second_leg: 'LH796', dep_time: '17:25', arr_time: '07:10', arr_day_offset: 2, weekdays: '每天', restrictions: ['极端高低温季节停运', '中转 FRA 动物驿站'], notes: '一程 17.25 飞，07.05 落地法兰克福；二程 13.50 飞，07.10 落地香港（2D）' },
   { id: 'r07', origin: 'YYZ', dest: 'PVG', airline: '汉莎航空', airline_code: 'LH', flight_no: 'LH471', type: '中转', via: 'FRA', second_leg: 'LH728', dep_time: '17:25', arr_time: '10:05', arr_day_offset: 2, weekdays: '每天', restrictions: ['极端高低温季节停运'], notes: '二程 17.20 飞，10.05 落地浦东（2D）' },
+  { id: 'r20', origin: 'YYZ', dest: 'LHR', airline: '英国航空', airline_code: 'BA', flight_no: 'BA92', type: '直飞', dep_time: '18:30', arr_time: '06:30', arr_day_offset: 1, weekdays: '每天', restrictions: ['英国只收货运，不收随机'], notes: '落地希思罗 HARC 动物接待中心清关' },
+  { id: 'r21', origin: 'YYZ', dest: 'DXB', airline: '阿联酋航空', airline_code: 'EK', flight_no: 'EK242', type: '直飞', dep_time: '22:35', arr_time: '19:45', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制', '夏季高温停运'], notes: '19.45 落地迪拜，需 UAE 进口许可原件' },
+  { id: 'r22', origin: 'YYZ', dest: 'NRT', airline: '加拿大航空', airline_code: 'AC', flight_no: 'AC1', type: '直飞', dep_time: '13:40', arr_time: '15:30', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制', '需 AQS 提前申报'], notes: '15.30 落地成田，动物检疫所现场查验' },
+  { id: 'r23', origin: 'YYZ', dest: 'MEL', airline: '国泰航空', airline_code: 'CX', flight_no: 'CX829', type: '中转', via: 'HKG', second_leg: 'CX135', dep_time: '01:45', arr_time: '07:05', arr_day_offset: 2, weekdays: '每天', restrictions: ['需 DAFF 进口许可', '墨尔本隔离 10 天'], notes: '二程 20.30 飞，07.05 落地墨尔本（2D）' },
+  { id: 'r26', origin: 'YYZ', dest: 'LAX', airline: '加拿大航空', airline_code: 'AC', flight_no: 'AC791', type: '直飞', dep_time: '08:00', arr_time: '10:45', arr_day_offset: 0, weekdays: '每天', restrictions: [], notes: '随机为主，需 CDC 入境许可（犬）' },
+  // ---- YVR 温哥华 ----
+  { id: 'r02', origin: 'YVR', dest: 'HKG', airline: '国泰航空', airline_code: 'CX', flight_no: 'CX865', type: '直飞', dep_time: '02:05', arr_time: '06:10', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制', '极端高低温季节停运'], notes: '6.10 落地香港，YVR 货站周末只收到 20:00' },
+  { id: 'r04', origin: 'YVR', dest: 'PVG', airline: '加拿大航空', airline_code: 'AC', flight_no: 'AC25', type: '直飞', dep_time: '12:35', arr_time: '15:40', arr_day_offset: 1, weekdays: '二四六', restrictions: ['短鼻犬限制'], notes: '15.40 落地浦东' },
   { id: 'r08', origin: 'YVR', dest: 'PVG', airline: '全日空', airline_code: 'NH', flight_no: 'NH115', type: '中转', via: 'NRT', second_leg: 'NH919', dep_time: '13:30', arr_time: '21:10', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制', 'NRT 中转不超过 24h'], notes: '二程 18.20 飞，21.10 落地上海（1D），全程温控' },
+  { id: 'r14', origin: 'YVR', dest: 'HKG', airline: '加拿大航空', airline_code: 'AC', flight_no: 'AC7', type: '直飞', dep_time: '11:55', arr_time: '16:35', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制', '夏季高温停运'], notes: '16.35 落地香港' },
+  { id: 'r15', origin: 'YVR', dest: 'CAN', airline: '南方航空', airline_code: 'CZ', flight_no: 'CZ330', type: '直飞', dep_time: '13:00', arr_time: '17:20', arr_day_offset: 1, weekdays: '二四六', restrictions: ['短鼻犬限制'], notes: '17.20 落地广州' },
+  // ---- JFK 纽约 ----
   { id: 'r09', origin: 'JFK', dest: 'HKG', airline: '国泰航空', airline_code: 'CX', flight_no: 'CX841', type: '直飞', dep_time: '01:50', arr_time: '05:35', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制'], notes: '5.35 落地香港，JFK 货站需 USDA 背书原件' },
   { id: 'r10', origin: 'JFK', dest: 'PVG', airline: '全日空', airline_code: 'NH', flight_no: 'NH109', type: '中转', via: 'NRT', second_leg: 'NH919', dep_time: '13:45', arr_time: '21:10', arr_day_offset: 2, weekdays: '每天', restrictions: ['短鼻犬限制'], notes: '二程 18.20 飞，21.10 落地上海（2D）' },
+  // ---- LAX 洛杉矶 ----
   { id: 'r11', origin: 'LAX', dest: 'HKG', airline: '国泰航空', airline_code: 'CX', flight_no: 'CX883', type: '直飞', dep_time: '01:00', arr_time: '06:35', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制'], notes: '6.35 落地香港' },
   { id: 'r12', origin: 'LAX', dest: 'CAN', airline: '南方航空', airline_code: 'CZ', flight_no: 'CZ328', type: '直飞', dep_time: '01:00', arr_time: '06:30', arr_day_offset: 1, weekdays: '一三五六', restrictions: ['短鼻犬限制', '极端高低温季节停运'], notes: '6.30 落地广州白云，广州口岸有条件免隔离' },
   { id: 'r13', origin: 'LAX', dest: 'PEK', airline: '中国国际航空', airline_code: 'CA', flight_no: 'CA988', type: '直飞', dep_time: '02:00', arr_time: '05:30', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制'], notes: '5.30 落地北京' },
-  { id: 'r14', origin: 'YVR', dest: 'HKG', airline: '加拿大航空', airline_code: 'AC', flight_no: 'AC7', type: '直飞', dep_time: '11:55', arr_time: '16:35', arr_day_offset: 1, weekdays: '每天', restrictions: ['短鼻犬限制', '夏季高温停运'], notes: '16.35 落地香港' },
-  { id: 'r15', origin: 'YVR', dest: 'CAN', airline: '南方航空', airline_code: 'CZ', flight_no: 'CZ330', type: '直飞', dep_time: '13:00', arr_time: '17:20', arr_day_offset: 1, weekdays: '二四六', restrictions: ['短鼻犬限制'], notes: '17.20 落地广州' },
+  // ---- PVG 上海 ----
   { id: 'r16', origin: 'PVG', dest: 'YYZ', airline: '加拿大航空', airline_code: 'AC', flight_no: 'AC28', type: '直飞', dep_time: '16:45', arr_time: '18:55', arr_day_offset: 0, weekdays: '每天', restrictions: ['短鼻犬限制'], notes: '当天 18.55 落地多伦多，落地需 CFIA 检查（工作日 8:00–16:00）' },
   { id: 'r17', origin: 'PVG', dest: 'YVR', airline: '加拿大航空', airline_code: 'AC', flight_no: 'AC26', type: '直飞', dep_time: '17:40', arr_time: '13:35', arr_day_offset: 0, weekdays: '二四六', restrictions: ['短鼻犬限制'], notes: '当天 13.35 落地温哥华' },
-  { id: 'r18', origin: 'HKG', dest: 'YVR', airline: '国泰航空', airline_code: 'CX', flight_no: 'CX838', type: '直飞', dep_time: '10:15', arr_time: '07:10', arr_day_offset: 0, weekdays: '每天', restrictions: ['短鼻犬限制'], notes: '当天 7.10 落地温哥华' },
+  { id: 'r25', origin: 'PVG', dest: 'LAX', airline: '中国东方航空', airline_code: 'MU', flight_no: 'MU583', type: '直飞', dep_time: '12:30', arr_time: '09:30', arr_day_offset: 0, weekdays: '每天', restrictions: ['短鼻犬限制', '犬需 CDC 入境许可'], notes: '当天 9.30 落地洛杉矶，CDC 指定口岸' },
   { id: 'r19', origin: 'PVG', dest: 'MEL', airline: '国泰航空', airline_code: 'CX', flight_no: 'CX369', type: '中转', via: 'HKG', second_leg: 'CX135', dep_time: '09:20', arr_time: '07:05', arr_day_offset: 1, weekdays: '每天', restrictions: ['需 DAFF 进口许可', '墨尔本隔离 10 天'], notes: '二程 20.30 飞，07.05 落地墨尔本（1D）' },
 ];
 

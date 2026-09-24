@@ -1,17 +1,17 @@
 import { Lock, Pencil, Eye } from 'lucide-react';
-import type { Case, SectionKey, Task } from '@/types';
+import type { Attachment, Case, SectionKey, Task } from '@/types';
 import { SECTION_META } from '@/data/roles';
 import { sectionOwner, sectionProgress } from '@/lib/permissions';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { cn } from '@/lib/utils';
 
-export function SectionCard({ section, canEdit, children, actions, className }: { section: SectionKey; canEdit: boolean; children: React.ReactNode; actions?: React.ReactNode; className?: string }) {
+export function SectionCard({ section, canEdit, children, actions, className, titleSuffix }: { section: SectionKey; canEdit: boolean; children: React.ReactNode; actions?: React.ReactNode; className?: string; titleSuffix?: string }) {
   const meta = SECTION_META.find((s) => s.key === section)!;
   return (
     <section id={`sec-${section}`} className={cn('rounded-xl bg-white p-4 ring-1 ring-foreground/10', className)}>
       <header className="mb-3 flex items-center gap-2">
         <span className="text-sm text-muted-foreground">{meta.index}</span>
-        <h3 className="font-heading text-sm font-semibold text-foreground">{meta.label}</h3>
+        <h3 className="font-heading text-sm font-semibold text-foreground">{titleSuffix ?? meta.label}</h3>
         <span className={cn('ml-1 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[0.65rem]', canEdit ? 'bg-success/25 text-[#2f5a3c]' : 'bg-muted text-muted-foreground')}>
           {canEdit ? <Pencil className="size-2.5" /> : <Eye className="size-2.5" />}
           {canEdit ? '可编辑' : '只读'}
@@ -24,10 +24,10 @@ export function SectionCard({ section, canEdit, children, actions, className }: 
 }
 
 /** 无权限分区：灰色卡片，只显示负责人与进度 */
-export function LockedSection({ section, c, tasks, className }: { section: SectionKey; c: Case; tasks: Task[]; className?: string }) {
+export function LockedSection({ section, c, tasks, attachments, className }: { section: SectionKey; c: Case; tasks: Task[]; attachments: Attachment[]; className?: string }) {
   const meta = SECTION_META.find((s) => s.key === section)!;
   const owner = sectionOwner(c, section);
-  const p = sectionProgress(c, tasks, section);
+  const p = sectionProgress(c, tasks, section, attachments);
   const tone = p.label === '已完成' ? 'bg-success/25 text-[#2f5a3c]' : p.label === '进行中' ? 'bg-warning/40 text-[#6b4f12]' : 'bg-muted text-muted-foreground';
   return (
     <section id={`sec-${section}`} className={cn('rounded-xl border border-dashed border-border bg-muted/60 p-4 transition-shadow', className)}>
